@@ -6,4 +6,7 @@
 
 ## RxHttp 网络请求
 
-[github]("https://github.com/liujingxing/RxHttp")
+[github](https://github.com/liujingxing/RxHttp)
+
+1. android:name="com.wl1217.mybox.MyApp"
+2. android:networkSecurityConfig="@xml/network_config"
