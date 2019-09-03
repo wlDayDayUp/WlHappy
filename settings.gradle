@@ -1,0 +1,2 @@
+include ':app', ':mybox'
+rootProject.name='WlHappy'
