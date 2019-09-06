@@ -1,8 +1,10 @@
-package com.wl1217.mybox;
+package com.wl1217.mybox.http;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
+
+import com.wl1217.mybox.MyApp;
 
 
 /**

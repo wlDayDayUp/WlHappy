@@ -20,7 +20,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -35,11 +35,10 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 
-    api 'com.rxjava.rxhttp:rxhttp:1.1.6'
-    api 'com.rxjava.rxlife:rxlife:1.0.9'  //页面销毁，关闭请求，非必须
-    annotationProcessor 'com.rxjava.rxhttp:rxhttp-compiler:1.1.6'
     api('com.rxjava.rxhttp:rxhttp:1.1.6') { //xxx为RxHttp最新版本
         exclude group: "com.squareup.okhttp3"
     }
     api 'com.squareup.okhttp3:okhttp:3.12.3' //此版本最低要求 API 9
+    api 'com.rxjava.rxlife:rxlife:1.0.9'  //页面销毁，关闭请求，非必须
+    annotationProcessor 'com.rxjava.rxhttp:rxhttp-compiler:1.1.6'
 }

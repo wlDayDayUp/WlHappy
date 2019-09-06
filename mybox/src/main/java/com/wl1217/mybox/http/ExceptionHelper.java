@@ -1,9 +1,12 @@
-package com.wl1217.mybox;
+package com.wl1217.mybox.http;
 
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import com.wl1217.mybox.MyApp;
+import com.wl1217.mybox.R;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;

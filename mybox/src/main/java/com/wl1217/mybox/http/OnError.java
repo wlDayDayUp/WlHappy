@@ -1,9 +1,8 @@
-package com.wl1217.mybox;
+package com.wl1217.mybox.http;
 
 
 
 import io.reactivex.functions.Consumer;
-
 
 
 public interface OnError extends Consumer<Throwable> {

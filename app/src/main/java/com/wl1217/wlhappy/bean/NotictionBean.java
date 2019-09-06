@@ -1,4 +1,4 @@
-package com.wl1217.wlhappy;
+package com.wl1217.wlhappy.bean;
 
 import java.util.List;
 
@@ -61,6 +61,16 @@ public class NotictionBean {
     }
 
     public static class InfolistBean {
+        @Override
+        public String toString() {
+            return "InfolistBean{" +
+                    "header='" + header + '\'' +
+                    ", id='" + id + '\'' +
+                    ", rn='" + rn + '\'' +
+                    ", createtime='" + createtime + '\'' +
+                    '}';
+        }
+
         /**
          * header : 关于下载管理事项的通知
          * id : 28e0818545ef438b0145efc5b2360000
@@ -104,5 +114,15 @@ public class NotictionBean {
         public void setCreatetime(String createtime) {
             this.createtime = createtime;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "NotictionBean{" +
+                "success=" + success +
+                ", msg='" + msg + '\'' +
+                ", pagecount='" + pagecount + '\'' +
+                ", infolist=" + infolist +
+                '}';
     }
 }

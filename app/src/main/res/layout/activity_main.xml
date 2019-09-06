@@ -9,8 +9,48 @@
 
     <Button
         android:id="@+id/getBt"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="get" />
-    
+
+
+    <Button
+        android:id="@+id/postBt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="post" />
+
+    <Button
+        android:id="@+id/downLoadBt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="downLoad" />
+
+
+    <Button
+        android:id="@+id/oneUploaddBt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="单个文件上传" />
+
+
+    <Button
+        android:id="@+id/moreUploaddBt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="多个文件上传" />
+
+
+    <Button
+        android:id="@+id/dsBt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="定时上报位置" />
+
+    <TextView
+        android:id="@+id/resultTv"
+        android:layout_width="match_parent"
+        android:layout_height="150dp" />
+
+
 </LinearLayout>

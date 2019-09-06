@@ -1,7 +1,8 @@
-package com.wl1217.mybox;
+package com.wl1217.mybox.http;
 
 import android.text.TextUtils;
 
+import com.wl1217.mybox.MyApp;
 
 import rxhttp.wrapper.exception.HttpStatusCodeException;
 import rxhttp.wrapper.exception.ParseException;
