@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wl1217.wlhappy">
 
+
+    <!--获取运营商信息，用于支持提供运营商信息相关的接口-->
     <application
         android:name="com.wl1217.mybox.MyApp"
         android:allowBackup="true"
@@ -20,7 +22,11 @@
             </intent-filter>
         </activity>
 
+        <!-- 定位需要的服务 -->
         <!--        适配Android 7  -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="6ef8f701ea8d2583c78105393c29df1d" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.wl1217.wlhappy.fileprovider"
@@ -31,11 +37,53 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <service android:name="com.amap.api.location.APSService" />
+
+
         <service
             android:name=".MyService"
             android:enabled="true"
             android:exported="true"></service>
     </application>
+    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <!-- 请求网络 -->
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+
+    <!-- 不是SDK需要的权限，是示例中的后台唤醒定位需要的权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- 需要运行时注册的权限 -->
+    <!--用于进行网络定位-->
+    <!--用于访问GPS定位-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--用于提高GPS定位速度-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--写入扩展存储，向扩展卡写入数据，用于写入缓存定位数据-->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <!--读取缓存数据-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!--用于读取手机当前的状态-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- 更改设置 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <!-- 3.2.0版本增加 -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!-- 3.2.0版本增加-->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 

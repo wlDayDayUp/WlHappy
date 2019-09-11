@@ -1,10 +1,16 @@
 package com.wl1217.wlhappy;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import android.Manifest;
+import android.app.IntentService;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -34,11 +40,51 @@ import rxhttp.wrapper.parse.SimpleParser;
 public class MainActivity extends BaseActivity {
 
     private TextView resultTv;
+    private Intent dwIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        PackageManager pkgManager = getPackageManager();
+
+        // 读写 sd card 权限非常重要, android6.0默认禁止的, 建议初始化之前就弹窗让用户赋予该权限
+        boolean sdCardWritePermission =
+                pkgManager.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+
+        // 读sd card 权限非常重要, android6.0默认禁止的, 建议初始化之前就弹窗让用户赋予该权限
+        boolean sdCardReadPermission =
+                pkgManager.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+
+        // read phone state用于获取 imei 设备信息
+        boolean phoneSatePermission =
+                pkgManager.checkPermission(Manifest.permission.READ_PHONE_STATE, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+
+        // 相机权限
+        boolean cramerSatePermission =
+                pkgManager.checkPermission(Manifest.permission.CAMERA, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+
+        // 地理位置权限
+        boolean coarseLocationPermission =
+                pkgManager.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+
+        // 地理位置权限
+        boolean accessFineLocationPermission =
+                pkgManager.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+
+
+        if (Build.VERSION.SDK_INT >= 23
+                && !sdCardWritePermission ||
+                !phoneSatePermission ||
+                !cramerSatePermission ||
+                !coarseLocationPermission ||
+                !accessFineLocationPermission
+        ) {
+            requestPermission();
+        }
+
+        dwIntent = new Intent(MainActivity.this, MyService.class);
 
         resultTv = findViewById(R.id.resultTv);
 
@@ -148,16 +194,39 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.dsBt).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+//                开启前台服务
+                startService(dwIntent);
+
 //                Constraints myConstraints = new Constraints.Builder()
 //                        .setRequiredNetworkType(NetworkType.CONNECTED)
 //                        .build();
 
-                PeriodicWorkRequest oneTimeWork = new PeriodicWorkRequest.Builder(MyWorker.class, 5, TimeUnit.SECONDS)
-//                        .setConstraints(myConstraints)
-                        .build();
-                WorkManager.getInstance(MainActivity.this).enqueue(oneTimeWork);
+//                PeriodicWorkRequest oneTimeWork = new PeriodicWorkRequest.Builder(MyWorker.class, 5, TimeUnit.SECONDS)
+////                        .setConstraints(myConstraints)
+//                        .build();
+//                WorkManager.getInstance(MainActivity.this).enqueue(oneTimeWork);
 
             }
         });
+
+        findViewById(R.id.stopDwBt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopService(dwIntent);
+            }
+        });
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                },
+                1001);
     }
 }

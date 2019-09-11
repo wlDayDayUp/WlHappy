@@ -47,6 +47,12 @@
         android:layout_height="wrap_content"
         android:text="定时上报位置" />
 
+    <Button
+        android:id="@+id/stopDwBt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="停止定位" />
+
     <TextView
         android:id="@+id/resultTv"
         android:layout_width="match_parent"

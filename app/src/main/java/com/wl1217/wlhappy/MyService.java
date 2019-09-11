@@ -7,25 +7,36 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
-import java.util.concurrent.TimeUnit;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationListener;
+import com.wl1217.mybox.utils.MapLocationUtils;
+
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MyService extends Service {
+    private Handler handler;
+    private boolean isRuning;
+    private Runnable dwRunnable;
+    private MapLocationUtils mapLocationUtils;
+
     public MyService() {
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -33,67 +44,127 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Intent nfIntent = new Intent(this, MainActivity.class);
 
-        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationChannel mChannel = null;
+//        handler = new Handler();
+
+        mapLocationUtils = new MapLocationUtils(this, new AMapLocationListener() {
+            @Override
+            public void onLocationChanged(AMapLocation aMapLocation) {
+                Log.d("wg", "onLocationChanged: " + aMapLocation.getLatitude() + aMapLocation.getLongitude() + " --------- " + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+
+                /*测试*/
+                FileOutputStream out = null;
+                BufferedWriter writer = null;
+
+                try {
+                    out = openFileOutput("test_data", Context.MODE_APPEND);
+                    writer = new BufferedWriter(new OutputStreamWriter(out));
+                    writer.write("地理位置信息: -----------------: " +
+                            aMapLocation.getLongitude() + "," + aMapLocation.getLatitude() + " " +
+                            (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+                    writer.newLine();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (writer != null) {
+                        try {
+                            writer.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+        mapLocationUtils.startLocation();
+
+//        dwRunnable = new Runnable() {
+//            @Override
+//            public void run() {
+//
+//
+//                handler.postDelayed(this, 5000L);
+////                FileOutputStream out = null;
+////                BufferedWriter writer = null;
+////
+////                try {
+////                    out = openFileOutput("test_data", Context.MODE_APPEND);
+////                    writer = new BufferedWriter(new OutputStreamWriter(out));
+////                    writer.write("地理位置信息: -----------------: " + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+////                    writer.newLine();
+////                } catch (FileNotFoundException e) {
+////                    e.printStackTrace();
+////                } catch (IOException e) {
+////                    e.printStackTrace();
+////                } finally {
+////                    if (writer != null) {
+////                        try {
+////                            writer.close();
+////                            handler.postDelayed(this, 30000L);
+////                        } catch (IOException e) {
+////                            e.printStackTrace();
+////                        }
+////                    }
+////                }
+//            }
+//        };
+
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        PendingIntent goMainPendIntent = PendingIntent.getActivity(this, 0, mainIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        // 获取系统 通知管理 服务
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            mChannel = new NotificationChannel("CHANNEL_ID_STRING", "正在定位中……", NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(mChannel);
-            notification = new Notification.Builder(this, "CHANNEL_ID_STRING")
-                    .setContentIntent(PendingIntent.
-                            getActivity(this, 0, nfIntent, 0)) // 设置PendingIntent
-                    .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
-                            R.mipmap.ic_launcher)) // 设置下拉列表中的图标(大图标)
-                    .setContentTitle("下拉列表中的Title") // 设置下拉列表里的标题
-                    .setSmallIcon(R.mipmap.ic_launcher) // 设置状态栏内的小图标
-                    .setContentText("要显示的内容") // 设置上下文内容
-                    .setWhen(System.currentTimeMillis()).build(); // 设置该通知发生的时间
+        // 构建 Notification
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setContentTitle("实时定位中")
+                .
 
+                        setSmallIcon(R.mipmap.ic_launcher)
+                .
 
+                        setContentIntent(goMainPendIntent)
+                .
+
+                        setContentText("正在实时定位并同步位置");
+
+        // 兼容  API 26，Android 8.0
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // 第三个参数表示通知的重要程度，默认则只在通知栏闪烁一下
+            NotificationChannel notificationChannel = new NotificationChannel("SSDWNotificationId", "SSDWNotificationName", NotificationManager.IMPORTANCE_HIGH);
+            // 注册通道，注册后除非卸载再安装否则不改变
+            notificationManager.createNotificationChannel(notificationChannel);
+            builder.setChannelId("SSDWNotificationId");
+            notification = builder.build();
         } else {
-
-            Notification.Builder builder = new Notification.Builder
-                    (this.getApplicationContext()); //获取一个Notification构造器
-
-
-            builder.setContentIntent(PendingIntent.
-                    getActivity(this, 0, nfIntent, 0)) // 设置PendingIntent
-                    .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
-                            R.mipmap.ic_launcher)) // 设置下拉列表中的图标(大图标)
-                    .setContentTitle("下拉列表中的Title") // 设置下拉列表里的标题
-                    .setSmallIcon(R.mipmap.ic_launcher) // 设置状态栏内的小图标
-                    .setContentText("要显示的内容") // 设置上下文内容
-                    .setWhen(System.currentTimeMillis()); // 设置该通知发生的时间
-
-            notification = builder.build(); // 获取构建好的Notification
-            notification.defaults = Notification.DEFAULT_SOUND; //设置为默认的声音
-
-
+            notification = builder.getNotification();
         }
+
         startForeground(1, notification);
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("wg", "onStartCommand: ");
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                PeriodicWorkRequest oneTimeWork = new PeriodicWorkRequest.Builder(MyWorker.class, 5, TimeUnit.SECONDS)
-//                        .setConstraints(myConstraints)
-                        .build();
-                WorkManager.getInstance(MyService.this).enqueue(oneTimeWork);
 
-//                MyService.this.stopSelf();
-            }
-        }, 5000L);
+//        if (!isRuning) {
+//            isRuning = true;
+//            Log.d("wg", "onStartCommand: ");
+//
+//            handler.post(dwRunnable);
+//        }
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
+//        isRuning = false;
+//        if (dwRunnable != null) {
+//            handler.removeCallbacks(dwRunnable);
+//        }
+        mapLocationUtils.destroyLocation();
         super.onDestroy();
         Log.d("wg", "onDestroy: --------------");
     }
