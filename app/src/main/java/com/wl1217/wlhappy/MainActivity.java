@@ -10,8 +10,10 @@ import android.app.IntentService;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -214,6 +216,68 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 stopService(dwIntent);
+            }
+        });
+
+
+        // 获取SDCard外部图片
+        findViewById(R.id.getSDcardOutTp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+                        String desc = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DESCRIPTION));
+                        byte[] data = cursor.getBlob(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                        String path = new String(data, 0, data.length - 1);
+
+                        Log.d("wg", "图片 " + name + " " + desc + " " + path);
+                    }
+                }
+            }
+        });
+
+        // 获取SDCard外部视频 getSDcardOutSp
+        findViewById(R.id.getSDcardOutSp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Cursor cursor = getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        String name = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
+                        String desc = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DESCRIPTION));
+                        byte[] data = cursor.getBlob(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
+                        String path = new String(data, 0, data.length - 1);
+
+                        Log.d("wg", "视频 " + name + " " + desc + " " + path);
+                    }
+                }
+            }
+        });
+
+
+        // 获取SDCard外部音频 getSDcardOutYp
+        findViewById(R.id.getSDcardOutYp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                        byte[] data = cursor.getBlob(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+                        String path = new String(data, 0, data.length - 1);
+
+                        Log.d("wg", "音频 " + name + " " + path);
+                    }
+                }
+            }
+        });
+
+        findViewById(R.id.goPzOrSp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(PzOrSpActivity.getInstance(MainActivity.this));
             }
         });
     }
